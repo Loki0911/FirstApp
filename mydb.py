@@ -5,7 +5,11 @@ class Database:
     def add_data(self,name,email,password):
 
         with open("resources/db.json","r") as rf:
-            database = json.load(rf)
+            content = rf.read()
+
+
+            database = json.load(content) if content.strip() else {}
+    
 
         if email in database:
             return 0

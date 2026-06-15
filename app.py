@@ -1,12 +1,14 @@
 from mydb import Database
 from tkinter import *
 from tkinter import messagebox
+from myapi import API
 class NLPApp:
 
     def __init__(self):
         # create database object
 
         self.db = Database()
+        self.api = API()
 
         self.root = Tk()
         self.root.title("NLPApp")
@@ -134,6 +136,7 @@ class NLPApp:
 
         if response:
             messagebox.showinfo('Success', 'Resistration successful You can login now')
+            self.login_gui()
 
         else:
             messagebox.showerror('Error','Email already exists')
@@ -173,22 +176,22 @@ class NLPApp:
         divider = Frame(card, bg="#C4A882", height=1)
         divider.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(0, 28))
 
-        sentiment_btn = Button(card, text="Sentiment Analysis", width=28, height=3, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.sentiment_gui)
-        sentiment_btn.grid(row=4, column=0, columnspan=2, pady=(0, 24))
+        langdetect_btn = Button(card, text="Language detection", width=28, height=3, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.detectlang_gui)
+        langdetect_btn.grid(row=4, column=0, columnspan=2, pady=(0, 24))
 
         ner_btn = Button(card, text="Name Entity Recognization", width=28, height=3, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"), command = self.ner_gui)
         ner_btn.grid(row=5, column=0, columnspan=2, pady=(0, 24))
 
         emotion_btn = Button(card, text="Emotion Prediction", width=28, height=3, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.emotion_gui)
-        emotion_btn.grid(row=6, column=0, columnspan=2, pady=(0, 24))
+        emotion_btn.grid(row=6, column=0, columnspan=2, pady=(0, 50))
 
-        logout_btn = Button(card, text="LOGOUT", width=18, height=1, bg="#BE0707", fg="white", font=("Verdana", 10, "bold"), command = self.login_gui)
-        logout_btn.grid(row=8, column=1, columnspan=2, pady=(0, 24),sticky="ew")     
-
-
+        logout_btn = Button(card, text="LOGOUT", width=15, height=1, bg="#BE0707", fg="white", font=("Verdana", 10, "bold"), command = self.login_gui)
+        logout_btn.grid(row=7, column=1, columnspan=2,sticky="ew")     
 
 
-    def sentiment_gui(self):
+
+
+    def detectlang_gui(self):
         self.clear()
         card = Frame(self.root, bg="#A39C90", padx=30, pady=30)
         card.place(relx=0.5, rely=0.5, anchor="center", width=340, height=530)
@@ -198,7 +201,7 @@ class NLPApp:
         heading.configure(font=("Verdana", 26, "bold"))
 
         
-        subtitle = Label(card, text="Sentiment Analysis", bg="#A39C90", fg="#1C1C1C")
+        subtitle = Label(card, text="Language detection", bg="#A39C90", fg="#1C1C1C")
         subtitle.grid(row=1, column=0, columnspan=2, pady=(0, 20))
         subtitle.configure(font=("Verdana", 9,"bold"))
 
@@ -209,18 +212,18 @@ class NLPApp:
         label1.grid(row=5, column=0, columnspan=2, pady=(0, 15), sticky='w')
         label1.configure(font=("Verdana", 14))
 
-        self.sentiment_input = Entry(card, width=34, bg="#D9C5A0", fg="#262525")
-        self.sentiment_input.grid(row=6, column=0, columnspan=2, ipady=28, ipadx=28, pady=(0, 30), sticky="ew")
+        self.language_input = Text(card, width=28,height = 5, bg="#D9C5A0", fg="#262525", wrap = WORD)
+        self.language_input.grid(row=6, column=0, columnspan=2, ipady=28, ipadx=28, pady=(0, 20), sticky="ew")
 
-        sentiment_btn = Button(card, text="Analyze Sentiment", width=28, height=2, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"))
-        sentiment_btn.grid(row=7, column=0, columnspan=2, pady=(0, 24))
+        detectlang_btn = Button(card, text="Proceed", width=28, height=2, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"), command = self.do_language_detection)
+        detectlang_btn.grid(row=7, column=0, columnspan=2, pady=(0, 20))
 
-        self.sentiment_result = Label(card, text="", bg="#F2E8D9", fg="#7D6B5D")
-        self.sentiment_result.grid(row=8, column=0, columnspan=2, pady=(0, 15))
-        self.sentiment_result.configure(font=("Verdana", 18))
+        self.language_result = Label(card, text="", bg="#F2E8D9", fg="#7D6B5D")
+        self.language_result.grid(row=8, column=0, columnspan=2, pady=(0, 15))
+        self.language_result.configure(font=("Verdana", 12))
 
-        back_btn = Button(card, text="BACK", width=20, height=2, bg="#8B2B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.home_gui)
-        back_btn.grid(row=9, column=0, columnspan=2, pady=(0, 24), sticky='e')
+        back_btn = Button(card, text="BACK", width=15, height=1, bg="#8B2B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.home_gui)
+        back_btn.grid(row=11, column=0, columnspan=2, sticky='e')
 
 
 
@@ -246,18 +249,19 @@ class NLPApp:
         label1.grid(row=5, column=0, columnspan=2, pady=(0, 15), sticky='w')
         label1.configure(font=("Verdana", 14))
 
-        self.ner_input = Entry(card, width=34, bg="#D9C5A0", fg="#262525")
+        self.ner_input = Text(card, width=28,height = 5, bg="#D9C5A0", fg="#262525", wrap = WORD)
         self.ner_input.grid(row=6, column=0, columnspan=2, ipady=28, ipadx=28, pady=(0, 30), sticky="ew")
 
-        ner_btn = Button(card, text="Analyze NER", width=28, height=2, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"))
-        ner_btn.grid(row=7, column=0, columnspan=2, pady=(0, 24))
+        ner_btn = Button(card, text="Proceed", width=28, height=2, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"))
+        ner_btn.grid(row=7, column=0, columnspan=2, pady=(0, 20))
 
         self.ner_result = Label(card, text="", bg="#F2E8D9", fg="#7D6B5D")
         self.ner_result.grid(row=8, column=0, columnspan=2, pady=(0, 15))
-        self.ner_result.configure(font=("Verdana", 18))
+        self.ner_result.configure(font=("Verdana", 12))
 
-        back_btn = Button(card, text="BACK", width=20, height=2, bg="#8B2B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.home_gui)
-        back_btn.grid(row=9, column=0, columnspan=2, pady=(0, 24), sticky='e')
+        back_btn = Button(card, text="BACK", width=15, height=1, bg="#8B2B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.home_gui)
+        back_btn.grid(row=11, column=0, columnspan=2, sticky='e')
+
 
 
     def emotion_gui(self):
@@ -281,19 +285,30 @@ class NLPApp:
         label1.grid(row=5, column=0, columnspan=2, pady=(0, 15), sticky='w')
         label1.configure(font=("Verdana", 14))
 
-        self.emotion_input = Entry(card, width=34, bg="#D9C5A0", fg="#262525")
+        self.emotion_input = Text(card, width=28,height = 5, bg="#D9C5A0", fg="#262525", wrap = WORD)
         self.emotion_input.grid(row=6, column=0, columnspan=2, ipady=28, ipadx=28, pady=(0, 30), sticky="ew")
 
-        emotion_btn = Button(card, text="Analyze Sentiment", width=28, height=2, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"))
-        emotion_btn.grid(row=7, column=0, columnspan=2, pady=(0, 24))
+        emotion_btn = Button(card, text="Proceed", width=28, height=2, bg="#8B7B1E", fg="white", font=("Verdana", 10, "bold"))
+        emotion_btn.grid(row=7, column=0, columnspan=2, pady=(0, 20))
 
         self.emotion_result = Label(card, text="", bg="#F2E8D9", fg="#7D6B5D")
         self.emotion_result.grid(row=8, column=0, columnspan=2, pady=(0, 15))
-        self.emotion_result.configure(font=("Verdana", 18))
+        self.emotion_result.configure(font=("Verdana", 12))
 
-        back_btn = Button(card, text="BACK", width=20, height=2, bg="#8B2B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.home_gui)
-        back_btn.grid(row=9, column=0, columnspan=2, pady=(0, 24), sticky='e')
+        back_btn = Button(card, text="BACK", width=15, height=1, bg="#8B2B1E", fg="white", font=("Verdana", 10, "bold"), command =  self.home_gui)
+        back_btn.grid(row=11, column=0, columnspan=2, sticky='e')
 
+
+    def do_language_detection(self):
+        text = self.language_input.get("1.0", END).strip()
+        result = self.api.language_detection(text)
+        txt =''
+        for i in result['languages']:
+            for j in i:
+                #print(j,i[j])
+                txt = txt + j + ' -> ' + str(i[j]) + '\n'
+            
+        self.language_result['text'] = txt
 
 
 nlp = NLPApp()
